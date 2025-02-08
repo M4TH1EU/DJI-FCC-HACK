@@ -97,7 +97,15 @@ class MainActivity : ComponentActivity() {
     private fun refreshUsbConnection() {
         if (usbManager.deviceList.isNotEmpty()) {
             val device: UsbDevice = usbManager.deviceList.values.first()
+
+            // Check to be sure the device is the initialized DJI Remote (and not another USB device)
+            if (device.productId != 4128) {
+                Log.d("USB_CONNECTION", "Device not supported ${device.productId}")
+                return
+            }
+
             usbConnection = usbManager.openDevice(device)
+
 
             if (usbConnection == null) {
                 Log.d("USB_CONNECTION", "Requesting USB Permission")
@@ -143,7 +151,6 @@ class MainActivity : ComponentActivity() {
                         -127, 31
                     ), 1000
                 )
-                usbSerialPort.close()
             } catch (e: Exception) {
                 Log.e("USB_PATCH", "Error sending patch: ${e.message}")
                 Toast.makeText(this, "Patch failed: ${e.message}", Toast.LENGTH_SHORT).show()
