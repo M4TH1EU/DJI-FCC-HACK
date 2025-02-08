@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,6 +28,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
@@ -42,6 +45,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,11 +58,16 @@ import com.hoho.android.usbserial.driver.CdcAcmSerialDriver
 import com.hoho.android.usbserial.driver.ProbeTable
 import com.hoho.android.usbserial.driver.UsbSerialPort
 import com.hoho.android.usbserial.driver.UsbSerialProber
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 class MainActivity : ComponentActivity() {
     private lateinit var usbManager: UsbManager
     private var usbConnection by mutableStateOf(null as UsbDeviceConnection?)
+    private var isPatching by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,7 +91,9 @@ class MainActivity : ComponentActivity() {
         refreshUsbConnection()
 
         setContent {
-            MainScreen(usbConnection != null, ::refreshUsbConnection, ::sendPatch)
+            DJI_FCC_HACK_Theme {
+                MainScreen(usbConnection != null, ::refreshUsbConnection, ::sendPatch, isPatching)
+            }
         }
     }
 
@@ -120,8 +131,11 @@ class MainActivity : ComponentActivity() {
      * Handles sending the patch via USB communication
      */
     private fun sendPatch() {
+        isPatching = true
+
         if (usbConnection == null) {
             Toast.makeText(this, "No USB device connected!", Toast.LENGTH_SHORT).show()
+            isPatching = false
             return
         }
 
@@ -156,6 +170,8 @@ class MainActivity : ComponentActivity() {
                 Toast.makeText(this, "Patch failed: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
+
+        isPatching = false
     }
 
     /**
@@ -202,13 +218,21 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(usbConnected: Boolean, onRefresh: () -> Unit, onSendPatch: () -> Unit) {
+fun MainScreen(
+    usbConnected: Boolean,
+    onRefresh: () -> Unit,
+    onSendPatch: () -> Unit,
+    isPatching: Boolean = false
+) {
+    var buttonText by remember { mutableStateOf("Send FCC Patch") }
+    var buttonEnabled by remember { mutableStateOf(true) }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("DJI FCC Hack") },
                 actions = {
-                    IconButton(onClick = onRefresh) {
+                    IconButton(onClick = onRefresh, enabled = !isPatching) {
                         Icon(Icons.Default.Refresh, contentDescription = "Refresh USB Connection")
                     }
                     IconButton(onClick = { /* Open Settings */ }) {
@@ -228,9 +252,9 @@ fun MainScreen(usbConnected: Boolean, onRefresh: () -> Unit, onSendPatch: () -> 
         ) {
             // App Logo
             Image(
-                painter = painterResource(id = R.drawable.dji_innovations_logo),
+                painter = painterResource(id = isSystemInDarkTheme().let { if (it) R.drawable.dji_light else R.drawable.dji_dark }),
                 contentDescription = "DJI Logo",
-                modifier = Modifier.size(100.dp)
+                modifier = Modifier.size(75.dp),
             )
 
             // USB Connection Status
@@ -246,10 +270,9 @@ fun MainScreen(usbConnected: Boolean, onRefresh: () -> Unit, onSendPatch: () -> 
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.usb_c_port),
-                        contentDescription = "USB Status",
-                        modifier = Modifier.size(24.dp),
+                    Icon(
+                        if (usbConnected) Icons.Default.CheckCircle else Icons.Default.Clear,
+                        contentDescription = "USB Status"
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
@@ -261,16 +284,65 @@ fun MainScreen(usbConnected: Boolean, onRefresh: () -> Unit, onSendPatch: () -> 
 
             // Send Patch Button
             Button(
-                onClick = onSendPatch,
+                onClick = {
+                    buttonText = "Successfully patched"
+                    buttonEnabled = false
+                    onSendPatch()
+
+                    CoroutineScope(Dispatchers.Main).launch {
+                        delay(5000)
+                        buttonText = "Send FCC Patch"
+                        buttonEnabled = true
+                    }
+                },
                 shape = RoundedCornerShape(24.dp),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                enabled = usbConnected
+                enabled = usbConnected && !isPatching && buttonEnabled
             ) {
                 Icon(Icons.Default.Build, contentDescription = "Patch")
                 Spacer(Modifier.width(8.dp))
-                Text("Send FCC Patch")
+                Text(buttonText)
+            }
+
+            // Instructions Section
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = "Instructions",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "1. Connect your phone to the bottom port of the RC remote.\n" +
+                                "2. Tap 'Send FCC Patch'.\n" +
+                                "3. Disconnect from the bottom port and connect to the top port.",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+
+            // Disclaimer Section
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = "Disclaimer",
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "This app is provided as-is and is not affiliated with DJI. Use at your own risk.",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
             }
         }
     }
@@ -281,6 +353,6 @@ fun MainScreen(usbConnected: Boolean, onRefresh: () -> Unit, onSendPatch: () -> 
 @Composable
 fun PreviewMainScreen() {
     DJI_FCC_HACK_Theme {
-        MainScreen(usbConnected = true, onRefresh = {}, onSendPatch = {})
+        MainScreen(usbConnected = true, onRefresh = {}, onSendPatch = {}, isPatching = false)
     }
 }
