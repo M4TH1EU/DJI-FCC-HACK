@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.res.Configuration
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.os.Bundle
@@ -395,10 +396,10 @@ fun MainScreen(
 }
 
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, device = "spec:width=411dp,height=891dp", apiLevel = 35, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
 fun PreviewMainScreen() {
-    DJI_FCC_HACK_Theme {
+    DJI_FCC_HACK_Theme{
         MainScreen(usbConnected = true, onRefresh = {}, onSendPatch = { false }, isPatching = false)
     }
 }

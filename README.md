@@ -1,7 +1,7 @@
 # DJI-FCC-HACK
 A simple Android app that forces DJI N1 remotes to FCC
 
-![screenshot.webp](.github/screenshot.webp)
+<img src=".github/light.webp" alt="app" width="200"/><img src=".github/dark.webp" alt="app" width="200"/>
 
 >[!WARNING]
 > This only works for drone with DJI N1 remotes. If you have a different remote, this app will not work for you.
