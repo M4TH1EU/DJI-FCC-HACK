@@ -26,6 +26,7 @@ This app should work on any Android device running Android 8 and above.
 **Tested on the following drones:**
 - DJI Mavic Air 2
 - DJI Mini 4K
+- DJI Mini 2
 
 >[!NOTE]
 > Please let me know if you have tested this app on another drone so I can update this README.
