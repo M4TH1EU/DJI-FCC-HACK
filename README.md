@@ -73,6 +73,7 @@ No, this app only switches to FCC mode. To switch back to CE, turn off the drone
 ## Goggles Support
 >[!WARNING]
 > This app is not related to the following FCC file-based hacks for goggles; they are included here for reference only.
+
 Steps to enable higher power output for DJI Goggles:
 
 **DJI Goggles V1/V2**
