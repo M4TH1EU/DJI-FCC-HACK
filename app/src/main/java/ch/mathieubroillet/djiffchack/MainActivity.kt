@@ -109,6 +109,7 @@ class MainActivity : ComponentActivity() {
     private fun refreshUsbConnection() {
         if (usbManager.deviceList.isNotEmpty()) {
             val device: UsbDevice = usbManager.deviceList.values.first()
+            Log.d("USB_CONNECTION", device.vendorId.toString() + ":" + device.productId.toString())
 
             // Check to be sure the device is the initialized DJI Remote (and not another USB device)
             if (device.productId != 4128) {
