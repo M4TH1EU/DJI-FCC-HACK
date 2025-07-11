@@ -33,7 +33,7 @@ This app should work on any Android device running Android 8 and above.
 * DJI Mini 2
 
 > [!WARNING]
-> Many people reported that this hack doesn't work with the Mini 3, if anyone finds a working hack from paid solutions such as [these](https://www.drone-tweaks.com/drones/dji-mini-3) I could take a look at reverse-engineering it. 
+> Many people reported that this hack doesn't work with the Mini 3, if anyone finds a working hack I could take a look at reverse-engineering it. 
 
 > [!NOTE]
 > Please let me know if you have tested this app on another drone so I can update this README.
