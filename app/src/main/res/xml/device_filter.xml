@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- DJI N1 Remote Controller (standard mode) -->
     <usb-device
         product-id="4128"
         vendor-id="11427"/>
+    <!-- DJI N1 Remote Controller (alternate mode - may be used by Mini 3) -->
+    <usb-device
+        product-id="2174"
+        vendor-id="5840"/>
 </resources>
