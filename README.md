@@ -7,6 +7,19 @@ A simple Android app that forces DJI N1 remotes to FCC
 > [!WARNING]
 > This only works for drones with DJI N1 remotes. If you have a different remote, this app will not work for you.
 
+## 🚀 Automated Builds with GitHub Actions
+
+This repository now includes GitHub Actions that automatically build APK files whenever code is pushed! 
+
+**To download a pre-built APK:**
+1. Go to the [Actions tab](../../actions)
+2. Click on the latest successful workflow run
+3. Download the APK from the "Artifacts" section
+
+📖 **[See detailed instructions here](GITHUB_ACTIONS_INSTRUCTIONS.md)**
+
+You can also manually trigger a build from the Actions tab without downloading or building anything locally!
+
 ## How to use
 
 Download the latest release from the [releases page](https://github.com/M4TH1EU/DJI-FCC-HACK/releases) and install it on your Android device.
