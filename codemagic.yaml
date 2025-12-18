@@ -29,7 +29,7 @@ workflows:
     publishing:
       email:
         recipients:
-          - user@example.com
+          - your-email@example.com # Replace with your actual email address
         notify:
           success: false
           failure: true
