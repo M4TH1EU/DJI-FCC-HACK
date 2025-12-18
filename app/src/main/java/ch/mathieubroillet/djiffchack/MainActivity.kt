@@ -115,8 +115,8 @@ class MainActivity : ComponentActivity() {
             // Supported device IDs:
             // - 11427:4128 (standard N1 remote)
             // - 5840:2174 (alternate mode, used by some drones including Mini 3)
-            val isSupported = (device.vendorId == 11427 && device.productId == 4128) ||
-                             (device.vendorId == 5840 && device.productId == 2174)
+            val isSupported = (device.vendorId == Constants.VENDOR_ID_DJI && device.productId == Constants.PRODUCT_ID_STANDARD) ||
+                             (device.vendorId == Constants.VENDOR_ID_ALTERNATE && device.productId == Constants.PRODUCT_ID_ALTERNATE)
             
             if (!isSupported) {
                 Log.d("USB_CONNECTION", "Device not supported ${device.vendorId}:${device.productId}")
@@ -147,11 +147,11 @@ class MainActivity : ComponentActivity() {
 
         val probeTable = ProbeTable().apply {
             // Standard N1 remote device ID
-            addProduct(11427, 4128, CdcAcmSerialDriver::class.java)
+            addProduct(Constants.VENDOR_ID_DJI, Constants.PRODUCT_ID_STANDARD, CdcAcmSerialDriver::class.java)
             
             // Alternate device ID - used by some drones including DJI Mini 3
             // when connected to the drone
-            addProduct(5840, 2174, CdcAcmSerialDriver::class.java)
+            addProduct(Constants.VENDOR_ID_ALTERNATE, Constants.PRODUCT_ID_ALTERNATE, CdcAcmSerialDriver::class.java)
         }
 
         // Retrieve the custom device (DJI remote) with the correct driver from the probe table above
