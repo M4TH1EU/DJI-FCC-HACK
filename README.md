@@ -34,7 +34,7 @@ This app should work on any Android device running Android 8 and above.
 * DJI Air 2S
 * DJI Neo 2
 * DJI Flip
-
+* DJI Mini 2 SE
 > [!WARNING]
 > Many people reported that this hack doesn't work with the Mini 3, if anyone finds a working hack I could take a look at reverse-engineering it. 
 
